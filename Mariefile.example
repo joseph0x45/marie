@@ -1,0 +1,14 @@
+[Setup_neovim]
+# This is a comment
+script = ""
+run_on_failure = ""
+continue_on_failure = ""
+depends_on = ""
+skip_if_dependency_fails = ""
+
+[Install_Packer]
+script = ""
+run_on_failure = ""
+continue_on_failure = ""
+depends_on = ""
+skip_if_dependency_fails = ""
