@@ -8,9 +8,9 @@ typedef struct {
   uint8_t stop_on_failure;
   uint8_t *depends_on;
   uint8_t skip_if_dependency_fails;
+  uint8_t failed;
 } Step;
 
-typedef Step **Steps;
+Step **parse(FILE *f);
+void run(Step **s);
 
-Steps parse(FILE *f);
-void run(Steps s);
