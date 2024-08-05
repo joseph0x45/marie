@@ -1,14 +1,15 @@
-[Setup_neovim]
+[Setup neovim]
 # This is a comment
+id = ""
 script = ""
 run_on_failure = ""
 continue_on_failure = ""
 depends_on = ""
 skip_if_dependency_fails = ""
-
-[Install_Packer]
+        
+[Install Packer]
 script = ""
 run_on_failure = ""
 continue_on_failure = ""
-depends_on = ""
+depends_on = "" # Takes in id from another step
 skip_if_dependency_fails = ""

@@ -1,50 +1,62 @@
-#include "marie.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-char *err_message;
-const char *valid_properties[5] = {"script", "run_on_failure",
-                                   "continue_on_failure", "depends_on",
-                                   "skip_if_dependency_fails"};
+typedef struct {
+  char *script;
+  int continue_on_failure;
+  char *run_on_failure;
+  char *depends_on;
+  int skip_if_dependency_failed;
+} Step;
 
-Step **parse(FILE *f) {
-  char line[256];
-  Step **s = (Step **)calloc(10, sizeof(Step *));
-  if (s == NULL) {
-    err_message = "Error while allocating memory";
-    return NULL;
+typedef enum {
+  OPEN_BRACKET,
+  CLOSING_BRACKET,
+  SCRIPT,
+  RUN_ON_FAILURE,
+  CONTINUE_ON_FAILURE,
+  DEPENDS_ON,
+  SKIP_IF_DEPENDENCY_FAILED,
+  HASHTAG,
+  EQUALS,
+} TokenType;
+
+typedef struct {
+  TokenType type;
+  char *value;
+} Token;
+
+void print_usage() { printf("Usage: marie run <file>\n"); }
+
+int main(int argc, char **argv) {
+  if (argc <= 2 || argc > 3) {
+    print_usage();
+    return EXIT_SUCCESS;
   }
-  int parsing_step = 0;
-  while (fgets(line, sizeof(line), f)) {
+  if (strcmp(argv[1], "run") != 0) {
+    print_usage();
+    return EXIT_SUCCESS;
+  }
+  FILE *f = fopen(argv[2], "r");
+  if (f == NULL) {
+    perror("Error while opening file");
+    return EXIT_FAILURE;
+  }
+  char *line = NULL;
+  size_t len = 0;
+  size_t nread = 0;
+  int parsing_step = 0; // false by default
+  int line_number = 0;
+  while ((nread = getline(&line, &len, f)) != -1) {
+    line_number++;
     char *t = strtok(line, " ");
-    if (strcmp(t, "#") == 0) {
-      // line is a comment, skip
+    int token_is_newline = strcmp(t, "\n") == 0;
+    if (t == NULL || token_is_newline) {
+      printf("Token is null or is new line");
       continue;
     }
   }
-  return NULL;
-}
-
-void run(Step **s) {}
-
-int main(int argc, char **argv) {
-  if ((argc == 3) && (strcmp(argv[1], "run") == 0)) {
-    FILE *f;
-    f = fopen(argv[2], "r");
-    if (f == NULL) {
-      perror("Error while reading file: ");
-      return 1;
-    }
-    Step **s = parse(f);
-    if (s == NULL) {
-      printf("%s\n", err_message);
-      return 1;
-    }
-    run(s);
-    fclose(f);
-    return 0;
-  }
-  printf("Usage: marie run <file>\n");
-  return 0;
+  fclose(f);
+  return EXIT_SUCCESS;
 }
